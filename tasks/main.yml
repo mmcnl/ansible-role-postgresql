@@ -1,0 +1,5 @@
+---
+- import_tasks: install.yml
+  tags: postgres
+- import_tasks: configure.yml
+  tags: postgres

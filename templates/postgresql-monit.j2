@@ -1,0 +1,5 @@
+# -*- mode: conf -*-
+# {{ ansible_managed }}
+
+check process postgresql with pidfile /var/run/postgresql/{{ pg_version }}-main.pid
+  if failed host localhost port 5432 protocol pgsql then alert

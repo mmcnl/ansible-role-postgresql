@@ -1,0 +1,50 @@
+- name: install postgresql config files
+  template:
+    src: "../templates/{{ item }}.j2"
+    dest: "/etc/postgresql/{{ pg_version }}/main/{{ item }}"
+  with_items:
+  - pg_hba.conf
+  - postgresql.conf
+  notify:
+  - restart postgresql
+
+- name: Open port to allow client connections
+  ufw:
+    rule: allow
+    port: 5432
+    src: "{{ item }}"
+    proto: tcp
+  with_items: "{{ permitted_client_ips }}"
+  notify:
+  - restart ufw
+  tags: ufw
+
+- name: Set up database_user
+  postgresql_user:
+    name: "{{ pg_database_user }}"
+    password: "{{ pg_database_plaintext_password }}"
+    encrypted: yes # ansible takes care of generating the md5 hash for the
+                   # password, so there's no need to do it manually
+    role_attr_flags: SUPERUSER
+    state: present
+    login_user: "{{ pg_admin_user }}"
+  become: yes # needed for postgresql peer authentication method
+  become_user: "{{ pg_admin_user }}"
+
+- name: Create app database
+  postgresql_db:
+    name: "{{ pg_database_name }}"
+    login_user: "{{ pg_admin_user }}"
+  become: yes # needed for postgresql peer authentication method
+  become_user: "{{ pg_admin_user }}"
+
+- name: Set up pg extensions
+  postgresql_ext:
+    db: "{{ pg_database_name }}"
+    name: "{{ item }}"
+    login_user: "{{ pg_admin_user }}"
+  with_items: "{{ pg_extensions }}"
+  become: yes # needed for postgresql peer authentication method
+  become_user: "{{ pg_admin_user }}"
+  notify:
+  - restart postgresql

@@ -1,0 +1,12 @@
+# -*- mode: conf -*-
+# {{ ansible_managed }}
+
+# see https://www.postgresql.org/docs/10/static/auth-pg-hba-conf.html
+
+# Database administrative login by Unix domain socket
+local   all             postgres                                peer
+
+# HOST  DATABASE  USER           ADDRESS    AUTH-METHOD
+{% for ip in permitted_client_ips %}
+host    all       {{ pg_db_user }}     {{ ip }}/32    md5
+{% endfor %}

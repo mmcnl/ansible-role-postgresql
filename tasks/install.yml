@@ -1,0 +1,35 @@
+- name: Add key for Postgres repo
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Add Postgres repo to sources list
+  apt_repository:
+    repo: 'deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main'
+    state: present
+
+- name: Install postgresql & dependencies
+  apt:
+    pkg:
+      - "postgresql-{{ pg_version }}"
+      - "postgresql-contrib-{{ pg_version }}"
+      - python3-psycopg2
+    cache_valid_time: 86400 # 1 day
+
+- name: watch postgresql with monit
+  template:
+    src: postgresql-monit.j2
+    dest: /etc/monit/conf.d/postgresql
+    mode: 0600
+  notify: reload monit
+
+- name: download pgmetrics
+  unarchive:
+    src: "{{ pgmetrics_download_url }}"
+    dest: /usr/local/src/
+    remote_src: yes
+
+- name: install pgmetrics
+  shell: 'cp -a /usr/local/src/pgmetrics*/pgmetrics /usr/local/bin/pgmetrics'
+  args:
+    creates: "/usr/local/bin/pgmetrics"
