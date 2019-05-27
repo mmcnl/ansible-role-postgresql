@@ -1,0 +1,28 @@
+#!/bin/bash
+# -*- mode: shell-script -*-
+# {{ ansible_managed }}
+
+# Dump and archive all postgresql databases
+
+set -o errexit -o nounset
+echo "$0:"
+
+host="`hostname`"
+backup_dir="{{ pg_backup_dir}}"
+
+# keep {{ pg_backup_retention_days }} days of backups (ie delete all older ones)
+find "$backup_dir" -maxdepth 1 -type f -mtime +{{ pg_backup_retention_days }} -delete
+
+timestamp=$(date +%Y%m%d-%H%M%S)
+
+# https://unix.stackexchange.com/a/181938
+# use a tmpfile in a dir that postgres has write permissions
+tmpfile=$(sudo -u postgres mktemp /tmp/postgresql-backup.XXXXXX)
+
+dump_filename="${backup_dir}/${host}-postgresql-{{ pg_database_name }}-${timestamp}.dump"
+
+sudo -u postgres pg_dump --format=c -f "$tmpfile" {{ pg_database_name }}
+
+mv "$tmpfile" "$dump_filename"
+
+echo "finished backup: $(du -h --summarize ${dump_filename})"

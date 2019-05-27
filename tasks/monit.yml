@@ -1,0 +1,22 @@
+---
+- name: Set up db user for root for monit
+  postgresql_user:
+    name: root
+    login_user: "{{ pg_admin_user }}"
+    state: present
+  become: yes # needed for postgresql peer authentication method
+  become_user: "{{ pg_admin_user }}"
+
+- name: Create empty root database for monit
+  postgresql_db:
+    name: root
+    login_user: "{{ pg_admin_user }}"
+  become: yes
+  become_user: "{{ pg_admin_user }}"
+
+- name: watch postgresql with monit
+  template:
+    src: postgresql-monit.j2
+    dest: /etc/monit/conf.d/postgresql
+    mode: 0600
+  notify: reload monit

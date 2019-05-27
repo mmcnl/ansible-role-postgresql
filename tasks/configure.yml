@@ -1,12 +1,11 @@
 - name: install postgresql config files
   template:
-    src: "../templates/{{ item }}.j2"
+    src: "{{ item }}.j2"
     dest: "/etc/postgresql/{{ pg_version }}/main/{{ item }}"
   with_items:
   - pg_hba.conf
   - postgresql.conf
-  notify:
-  - restart postgresql
+  notify: restart postgresql
 
 - name: Open port to allow client connections
   ufw:
@@ -14,7 +13,7 @@
     port: 5432
     src: "{{ item }}"
     proto: tcp
-  with_items: "{{ permitted_client_ips }}"
+  with_items: "{{ pg_permitted_client_ips }}"
   notify:
   - restart ufw
   tags: ufw

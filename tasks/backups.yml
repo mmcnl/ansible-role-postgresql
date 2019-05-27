@@ -1,0 +1,13 @@
+- name: create postgresql backup directory
+  file:
+    path: "{{ pg_backup_dir }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0700
+
+- name: create postgresql backup cron job
+  template:
+    src: postgresql-backup.j2
+    dest: /etc/cron.{{ pg_backup_frequency }}/postgresql-backup
+    mode: 0700

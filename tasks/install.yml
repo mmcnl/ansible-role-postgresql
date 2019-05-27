@@ -16,13 +16,6 @@
       - python3-psycopg2
     cache_valid_time: 86400 # 1 day
 
-- name: watch postgresql with monit
-  template:
-    src: postgresql-monit.j2
-    dest: /etc/monit/conf.d/postgresql
-    mode: 0600
-  notify: reload monit
-
 - name: download pgmetrics
   unarchive:
     src: "{{ pgmetrics_download_url }}"
