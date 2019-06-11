@@ -1,12 +1,12 @@
 ---
 - import_tasks: install.yml
-  tags: postgres_install
+  tags: postgresql_install
 
 - import_tasks: configure.yml
-  tags: postgres_configure
+  tags: postgresql_configure
 
 - import_tasks: monit.yml
-  tags: postgres_monit
+  tags: postgresql_monit
 
 - import_tasks: backups.yml
-  tags: postgres_backups
+  tags: postgresql_backups

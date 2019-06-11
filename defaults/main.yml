@@ -1,5 +1,8 @@
+---
 pgmetrics_download_url: https://github.com/rapidloop/pgmetrics/releases/download/v1.5.1/pgmetrics_1.5.1_linux_amd64.tar.gz
 
 pg_backup_dir: /var/local/backups/postgresql
 pg_backup_frequency: daily
 pg_backup_retention_days: 14
+pg_custom_pgtuning: no
+pg_use_ssl: no
