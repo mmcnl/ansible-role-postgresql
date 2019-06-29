@@ -17,7 +17,7 @@
 - name: Open port to allow client connections
   ufw:
     rule: allow
-    port: 5432
+    port: '5432'
     src: "{{ item }}"
     proto: tcp
   with_items: "{{ pg_permitted_client_ips }}"
