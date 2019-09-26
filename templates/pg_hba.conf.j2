@@ -10,5 +10,7 @@ local   all             postgres                                peer
 {% for ip in pg_permitted_client_ips %}
 host    all       {{ pg_database_user }}     {{ ip }}/32    md5
 {% endfor %}
-# add entry for monit -- allow root user to connect to empty root db only
+# add entries for monit -- allow root user to only connect from localhost to
+# empty root db
 host   root  root  127.0.0.1/32  trust
+host   root  root  ::1/128  trust
